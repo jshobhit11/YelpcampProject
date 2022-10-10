@@ -24,11 +24,17 @@ const MongoStore = require("connect-mongo");
  const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/yelp-camp';
 // const dbUrl =  'mongodb://127.0.0.1:27017/yelp-camp';
 
-mongoose.connect(dbUrl);
-    // useNewUrlParser: true,
-    // useCreateIndex: true,
-    // useUnifiedTopology: true,
-    // useFindAndModify: false
+// mongoose.connect(dbUrl)
+//      //useNewUrlParser: true,
+//      //useCreateIndex: true,
+//     // useUnifiedTopology: true,
+//     // useFindAndModify: false
+mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+});
 
 
 const db = mongoose.connection;
@@ -133,6 +139,9 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
+    if(!['/login','/'].includes(req.originalUrl)){
+        req.session.returnTo=req.originalUrl;
+    }
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
